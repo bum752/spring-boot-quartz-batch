@@ -2,6 +2,7 @@ package com.example.batch.job.config;
 
 import com.example.batch.entity.MemberEntity;
 import com.example.batch.job.JobExecutor;
+import com.example.batch.job.JobListener;
 import com.example.batch.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,7 @@ public class MemberDeleteBatchJobConfig {
     public Job memberDeleteJob() {
         return jobBuilderFactory
                 .get("memberDeleteJob")
+                .listener(new JobListener())
                 .start(memberDeleteStep())
                 .build();
     }
