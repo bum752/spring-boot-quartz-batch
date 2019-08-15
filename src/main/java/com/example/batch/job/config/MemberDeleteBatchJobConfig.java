@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -65,6 +67,7 @@ public class MemberDeleteBatchJobConfig {
     }
 
     @Bean
+    @JobScope
     public Step memberDeleteStep() {
         return stepBuilderFactory
                 .get("memberDeleteStep")
@@ -75,7 +78,9 @@ public class MemberDeleteBatchJobConfig {
                 .build();
     }
 
-    private ItemReader<MemberEntity> reader() {
+    @Bean
+    @StepScope
+    public ItemReader<MemberEntity> reader() {
         RepositoryItemReader<MemberEntity> reader = new RepositoryItemReader<>();
         reader.setRepository(memberRepository);
         reader.setMethodName("findAllByLastSignInDateTImeBefore");
@@ -86,7 +91,9 @@ public class MemberDeleteBatchJobConfig {
         return reader;
     }
 
-    private ItemProcessor<MemberEntity, MemberEntity> processor() {
+    @Bean
+    @StepScope
+    public ItemProcessor<MemberEntity, MemberEntity> processor() {
         return item -> {
             item.setDeleted(true);
             log.info("Member #{} is deleted.", item.getId());
@@ -94,7 +101,9 @@ public class MemberDeleteBatchJobConfig {
         };
     }
 
-    private ItemWriter<MemberEntity> writer() {
+    @Bean
+    @StepScope
+    public ItemWriter<MemberEntity> writer() {
         JpaItemWriter<MemberEntity> writer = new JpaItemWriter<>();
         writer.setEntityManagerFactory(entityManagerFactory);
         return writer;
