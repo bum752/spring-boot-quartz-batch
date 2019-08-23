@@ -5,6 +5,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "member")
 @Table(name = "member")
@@ -13,6 +14,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@NamedEntityGraph(
+        name = "MemberEntity.withDummyEntity",
+        attributeNodes = {@NamedAttributeNode(value = "dummyEntity")}
+)
 public class MemberEntity {
 
     @Id
@@ -23,9 +28,12 @@ public class MemberEntity {
     @Column(name = "member_name")
     private String name;
 
+    @OneToOne(mappedBy = "memberEntity", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private DummyEntity dummyEntity;
+
     @CreatedDate
     @Column(name = "last_sign_in", updatable = false)
-    private LocalDateTime lastSignInDateTIme;
+    private LocalDateTime lastSignInDateTime;
 
     @Builder.Default
     @Column(name = "is_deleted")
